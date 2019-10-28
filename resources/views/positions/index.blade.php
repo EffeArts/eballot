@@ -1,0 +1,113 @@
+@extends('layouts.eballot')
+@section('pageTitle', 'Positions')
+@section('content')
+<div class="content ">
+	<div class="container info_page">
+		<div class="row">
+			<div class="col-12">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item">
+							<a href="#">Home</a>
+						</li>
+						<li class="breadcrumb-item active" aria-current="page">
+							All positions
+						</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="card border-success">
+					<div class="card-header border-success">
+						<h2>
+							Manage All Positions
+						</h2>
+					</div>
+					<div class="card-body">
+						<div class="row pre-table">
+							<div class="col-6">
+								<a class="btn btn-primary" href="{{route('positions.create')}}">
+									<i class="fa fa-user-plus"></i> Add a new position
+								</a>
+							</div>
+							<div class="col-6 ">
+								<a class="btn btn-info float-right" href="">
+									<i class="fa fa-print"></i> Print list of positions
+								</a>
+							</div>
+						</div>
+						@foreach (['danger', 'warning', 'success', 'info'] as $msg)
+						@if(Session::has($msg))
+
+						<div class="alert alert-{{ $msg }}  alert-dismissible fade show" role="alert">
+							{{ Session::get($msg) }}
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						@endif
+						@endforeach
+
+
+						<table class="table table-striped" id="all_positions">
+							<thead>
+								<tr>
+									<th scope="col">No.</th>
+									<th scope="col">Name</th>
+									<th scope="col">Criteria</th>
+									<th scope="col">Number of Candidates</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php $counter = 1; ?>
+								@foreach($positions as $position)
+
+								<tr>
+									<th scope="row">{{ $counter }}</th>
+									<?php $counter++; ?>
+									<td>{{ $position->name }}</td>
+									<td>{{ $position->criteria }}</td>
+									<td>{{ $position->candidates->count() }}</td>
+									<td>
+										<span class="edit">
+											<a class="text-primary" href="{{ route('positions.edit', $position->id) }}">Edit</a>
+										</span>
+										|
+										<span class="delete">
+											<?php $form_class = $position->id ?>
+											<a class="text-danger" href="" onclick="var result = confirm('Are you sure you want delete this position?'); if( result ){ event.preventDefault(); document.getElementById('{{ $form_class }}').submit(); }">
+												Delete
+											</a>
+											<form id="{{ $form_class }}" action="{{ route('positions.destroy', $position->id) }}" method="POST" style="display: none">
+												<input type="hidden" name="_method" value="delete">
+												{{csrf_field()}}
+
+											</form>
+
+										</span>
+									</td>
+								</tr>
+
+								@endforeach
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+@endsection
+
+@section('js')
+<script type="text/javascript">
+	$(document).ready( function () {
+		$('#all_positions').DataTable();
+	} );
+</script>
+@endsection
